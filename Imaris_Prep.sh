@@ -1,5 +1,4 @@
 #!/bin/bash
-num=1
 cd ./Fish1
 times=$(ls -l | grep -c ^d)
 echo "There are ""$times"" time points."
