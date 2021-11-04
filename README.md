@@ -24,4 +24,6 @@ The ```Imaris_Prep.sh``` script takes output from a custom built light sheet mic
 **Current Known Issues**
 1. The script will display an error saying that it is not able to find the last slice in each of the timpoints given. This will hopefully be fixed in a future version but does not significantly impact the performance of the script and I was too lazy to fix it right now :)
 
-The ```Tif_convert.sh``` script is used to convert tif files to png files and moves all slices to a separate directory, inside of the main parent directory. This script expects the same directory architecture as described up above.  
+The ```Tif_convert.sh``` script is used to convert tif files to png files and moves all slices to a separate directory, inside of the main parent directory. This script expects the same directory architecture as described up above.
+
+The ```file_return.sh``` script is used to move the renamed files (executed through ```Tif_convert.sh```) back to their individual directories. This should run fairly quickly.   
