@@ -6,7 +6,7 @@ times=$(ls -l | grep -c ^d)
 # Read out how many time points there are
 echo "There are ""$times"" time points."
 # Make the parent directory for all of the converted png files
-mkdir ../../../../../../Converted_PNGs
+mkdir ../Converted_PNGs
 # 1st loop: all the timepoints
 for i in $(seq 1 $times)
 do
