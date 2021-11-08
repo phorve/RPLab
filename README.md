@@ -22,7 +22,7 @@ The ```Imaris_Prep.sh``` script takes output from a custom built light sheet mic
 
 ```
 ### file_return
-The ```file_return.sh``` script is used to move the renamed files (executed through ```Tif_convert.sh```) back to their individual directories and their original file names (even though they kind of suck). In essence, this script undoes everything that was performed using ```Imaris_Prep.sh```. To run this script, use the command ```bash file_return.sh```.  
+The ```file_return.sh``` script is used to move the renamed files (executed through ```Imaris_Prep.sh```) back to their individual directories and their original file names (even though they kind of suck). In essence, this script undoes everything that was performed using ```Imaris_Prep.sh```. To run this script, use the command ```bash file_return.sh```.  
 
 ### Tif_convert
 The ```Tif_convert.sh``` script is used to convert tif files to png files and moves all slices to a separate directory, inside of the main parent directory. This script expects the same directory architecture as described up above. To run this script, use the command ```bash Tif_convert.sh```.  
