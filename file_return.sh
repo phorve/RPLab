@@ -54,3 +54,11 @@ for z in $zslice; do
 # Move back to the main directory and delete all of our intermediate files that we no longer need
 cd ../
 rm files.txt | rmdir Imaris_to_convert | rm slices.txt | rm times.txt | rm uniques.txt | rm updateduniques.txt | rm z.txt
+
+# This is some extra code that can be useful for renaming files within a folder. This is executed through the rename package.
+# Install this package using homebrew and the command ```brew install rename```
+#for t in {1..30}; do
+#  cd /Volumes/Data/1Nov2021_Pseudomonas/PreAntibiotics/Fish1/Timepoint"$t"/Pos1/zStack/GFP/Default
+#  rename 's/time'$t'/time000000000/' *
+# this command works with the following syntax --> rename 's/what you want to replace/what you want to replace it with/' *
+#done
