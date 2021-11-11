@@ -9,6 +9,7 @@
 %=========================================================================%
 %=========================================================================%
 % Initial Script written by PFH on 9 November 2021 
+% Edits made by Raghu on 10 November 2021
 %=========================================================================%
 %=========================================================================%
 %% 1. Prompt setup for working directory
@@ -28,15 +29,25 @@ extension=".mat";
 all_files = dir;
 all_dir = all_files([all_files(:).isdir]);
 timepoints = numel(all_dir);
-
 %% 4. Set the threshold for this dataset 
 % I selected timepoint 29 (just under 5 hours of growth) since this is a consistent timepoint in every time series and is before the large biofilm aggregates begin to form.  
-levelimg=imread(startpath+fish+"/Timepoint29/Pos1/zStack/GFP/Default/img_channel000_position000_time000000000_z200.tif");
-levelimg_adj = imadjust(levelimg);
-level = graythresh(levelimg_adj);
-testimage = imbinarize(levelimg_adj,level);
+levelimg=imread(startpath+fish+"/Timepoint1/Pos1/zStack/GFP/Default/img_channel000_position000_time000000000_z200.tif");
+
+slice_to_consider = 1; % for speed, just use one slice for the level, %PATRICK NOTE: Changed this to 1 since we are only loading in one slice right now, but we could use this to select just a single slice 
+   % not the whole image stack
+z = 3; % threshold = median + z standard deviations
+level = median(levelimg(:, :, slice_to_consider), 'all') + ...
+    z*std(double(levelimg(:, :, slice_to_consider)), [],  'all');  % not in [0,1]
+testimage = levelimg(:, :, slice_to_consider) > level;
+
+ste = strel('disk', 2); % for Morphological closing.
+testimage = imclose(testimage, ste);
+minPixels = 4;
+testimage = bwareaopen(testimage, minPixels);
+
 imshow(testimage);
-imshowpair(levelimg_adj, testimage, 'montage');
+imshowpair(levelimg(:, :, slice_to_consider), testimage, 'montage');
+
 %% 5. Start looping through the timepoints 
 for t = 1:timepoints
     disp("This is timepoint #"+t); % track the progress of the script 
@@ -52,24 +63,32 @@ for t = 1:timepoints
     stack(:,:,1) = first_image; % add our first image to the stack 
     for i = 2:D % cycle through all of the .tif files for this timepoint 
         img=imread(all_tiff(i).name); % read in the next image  
-        img = imadjust(img); % adjust the min and max for the image (this may be causing problems) 
-        total = sum(img(:)); % sum pixel intensity
+
+        total = sum(double(img(:))); % sum pixel intensity -- may not be necessary to make double, but in case we're close to saturating the 16-bit range
+        
         disp(total+"  is the overall intensity of the pixels") % display the sum pixel intensity for tracking purposes 
         %level = graythresh(img); % replaced this thresholding with the thresholding step in section 3 
         %thresholding up above 
-        BW = imbinarize(img,level); % binarize
+        
+        BW = img > level; % binarize
+        BW = imclose(BW, ste);
+        minPixels = 4;
+        BW = bwareaopen(BW, minPixels);
+        
         imshowpair(img,BW,'montage'); % show the comparison between the two images 
-        pixelcount = nnz(BW > level); % count pixels above the threshold 
+        
+        % pixelcount = nnz(BW > level); % count pixels above the threshold 
+        pixelcount = sum(BW(:)); % count pixels above the threshold 
+        intensityAboveThreshold = sum(double(img).*BW, 'all'); % total intensity in above-threshold pixels
+        
         disp(pixelcount+" pixels above the auto-calculated threshold") % display how many pixels are above the threshold for tracking purposes 
         stack(:,:,i) = img; % add this image to the image stack 
         disp(string(i*100.0/D) + "%"); % for seeing the reading progress
         cd (startpath); % move back to
-        save('intensities.mat', 'pixelcount', 'total', '-append');
+        filename = sprintf('data%04d.txt',t); % what is the filename for this time series? 
+        save(filename, 'total'); % Save the data from this iteration of the loop 
+        save(filename, 'total', '-append'); % apparantly you can't append until you already had a file... so make the file and then immediately append it 
         cd (fileFolder);
         disp("======================================================")
     end
-    % movefile ('intensities.mat', 'intensities.mat'+time) % --> this is not
-    % working but I want a way to rename the file for each timepoint to a
-    % diffrerent names so we have a .mat file (or maybe a .txt file?)
-    % for each time point instead of having one giant file 
 end
