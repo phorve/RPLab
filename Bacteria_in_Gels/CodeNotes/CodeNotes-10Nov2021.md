@@ -11,7 +11,7 @@ Patrick’s code: TotalFlouro_ImageAnalysis.m (now Flourescence_over_time.m)
 
 4. The Otsu threshold, even if properly calculated, won’t help, though. The images are dominated by the background, with a roughly Gaussian distribution about the median, so Otsu’s method will simply return the median. Histogram of slice 186 of timepoint 29:
 
-![ ](Bacteria_in_Gels/Images/10Nov2021-1.png)
+![ ](https://github.com/phorve/Phorve-RPLab/blob/main/Bacteria_in_Gels/Images/10Nov2021-1.png)
 
 5. The automated threshold value is 0.0018 x 65535 = 120  -- in the middle of the bell curve.
 
@@ -23,7 +23,7 @@ im29_186_bw = im29_186 > level;
 
 7. For z = 3, here’s a subset of one slice:
 
-![ ](Bacteria_in_Gels/Images/10Nov2021-2.png)
+![ ](https://github.com/phorve/Phorve-RPLab/blob/main/Bacteria_in_Gels/Images/10Nov2021-2.png)
 
 8. How slow will it be to do morphological closing and opening? Will worry about that later. After closure with a disk of radius 2:
 
@@ -31,13 +31,13 @@ im29_186_bw = im29_186 > level;
 im29_186_bw_mod = imclose(im29_186_bw, ste);
 ```
 
-![ ](Bacteria_in_Gels/Images/10Nov2021-3.png)
+![ ](https://github.com/phorve/Phorve-RPLab/blob/main/Bacteria_in_Gels/Images/10Nov2021-3.png)
 
 9. Then ```bwareaopen``` to remove objects with less than 4 pixels:
 
 ```im29_186_bw_mod = bwareaopen(im29_186_bw_mod, 4);```
 
-![ ](Bacteria_in_Gels/Images/10Nov2021-4.png)
+![ ](https://github.com/phorve/Phorve-RPLab/blob/main/Bacteria_in_Gels/Images/10Nov2021-4.png)
 
 10. Could save the number of pixels, the total intensity in these pixels, all regions, ...
 
