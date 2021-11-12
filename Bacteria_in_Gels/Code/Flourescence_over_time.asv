@@ -60,10 +60,10 @@ for t = 1:timepoints
     for i = 2:D % cycle through all of the .tif files for this timepoint and make a 3d array with all of the .tif files at this timpoint
         img=imread(all_tiff(i).name); % read in the next image
         stack(:,:,i) = img; % add this image to the image stack
-        disp(string(i*100.0/D) + "% of the images from this timepoint added to the 3D array"); % for seeing the reading progress
+        disp(string(i*100.0/D) + "%"); % for seeing the reading progress
     end
    %% 6. Analysis for the current timepoint
-   slice_to_consider = 100; % for speed, just use one slice for the level, 
+   slice_to_consider = 50; % for speed, just use one slice for the level, 
    disp("Using slice #"+slice_to_consider+" to determine the level to use");
    % not the whole image stack
    z = 4; % threshold = median + z standard deviations
@@ -76,15 +76,13 @@ for t = 1:timepoints
    disp("Discarding objects with fewer than "+pixels+" pixels");
    bw_stack = bwareaopen(bw_stack, minPixels); % discard things with fewer than this number of pixels
    % Get all the stats on our stack image for analysis 
-   L = bwlabeln(bw_stack); 
-   disp( max(L(:))+" objects were detected in this stack from timepoint"+t)
    disp("Determining statistics on our 3D binary image stack");
    stats = regionprops3(bw_stack, stack - level, 'Centroid', 'PrincipalAxisLength', 'Volume', 'VoxelIdxList', 'MaxIntensity', 'MeanIntensity', 'MinIntensity', 'VoxelValues', 'WeightedCentroid');
    disp("Saving our statistics to 'output_data.mat'");
    cd (startpath)
    file=(filename+t+extension);
-   disp("Saving the matrix")
-        save(file, 'stats');
+        save(filename, 'stats')
+        disp("Saving the matrix")
     disp("======================================================")
 end
 
