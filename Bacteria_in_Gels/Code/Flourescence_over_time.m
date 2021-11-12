@@ -77,7 +77,7 @@ for t = 1:timepoints
    bw_stack = bwareaopen(bw_stack, minPixels); % discard things with fewer than this number of pixels
    % Get all the stats on our stack image for analysis 
    L = bwlabeln(bw_stack); 
-   disp( max(L(:))+" objects were detected in this stack from timepoint"+t)
+   disp( max(L(:))+" objects were detected in this stack from timepoint "+t)
    disp("Determining statistics on our 3D binary image stack");
    stats = regionprops3(bw_stack, stack - level, 'Centroid', 'PrincipalAxisLength', 'Volume', 'VoxelIdxList', 'MaxIntensity', 'MeanIntensity', 'MinIntensity', 'VoxelValues', 'WeightedCentroid');
    disp("Saving our statistics to 'output_data.mat'");
@@ -87,15 +87,3 @@ for t = 1:timepoints
         save(file, 'stats');
     disp("======================================================")
 end
-
-%% junk code  for now 
-%         % pixelcount = nnz(BW > level); % count pixels above the threshold
-%         pixelcount = sum(BW(:)); % count pixels above the threshold
-%         intensityAboveThreshold = sum(double(img).*BW, 'all'); % total intensity in above-threshold pixels
-% 
-%         disp(pixelcount+" pixels above the auto-calculated threshold") % display how many pixels are above the threshold for tracking purposes
-%         
-%         filename = sprintf('data%04d.mat',t); % what is the filename for this time series?
-%         save(filename, 'total'); % Save the data from this iteration of the loop
-%         save(filename, 'total', '-append'); % apparantly you can't append until you already had a file... so make the file and then immediately append it
-%         cd (fileFolder);
