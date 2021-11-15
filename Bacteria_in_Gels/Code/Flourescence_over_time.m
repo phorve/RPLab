@@ -47,8 +47,9 @@ pixels=num2str(minPixels);
 %=========================================================================%
 %% 5. Start looping through the timepoints
 output = table;
-for t = 30:66
-%for t = 1:timepoints % use this for the majority of scripts 
+% for t = 30:66 Use this if you are using a series of timepoints that don't
+% start at 1
+for t = 1:timepoints 
     disp("This is timepoint #"+t); % track the progress of the script
     time=string(t); % make the timepoint something that we can use in a path
     fileFolder = strcat(startpath,fish,"/Timepoint",time,"/Pos1/zStack/GFP/Default"); % where are all of our .tif files located?
