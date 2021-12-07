@@ -1,6 +1,6 @@
 # RPLab
 
-This repository holds all work and code relating to work done in the Parthasarathy lab ([@rpLab](https://github.com/rplab)) at the University of Oregon. To date, this holds code and documentation for two major purposes:
+This repository holds all work and code relating to work done in the Parthasarathy lab ([@rpLab](https://github.com/rplab)) at the University of Oregon during Fall 2021. To date, this holds code and documentation for two major purposes:
 1. Bacteria_in_Gels - Identification and quantification of bacteria in an agar matrix as visualized with a light sheet microscope
 
 2. Imaris - Preparatory and supplemental scripts for the analysis of bacteria in an agar matrix using [Imaris](https://imaris.oxinst.com/)
