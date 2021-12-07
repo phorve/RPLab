@@ -1,8 +1,9 @@
 % This script will read in multiple .tif files output from a
 % custom lightsheet flourescence microscope and quantify the total
-% flourescence at each time point through the following steps 
+% flourescence at each time point through the following steps
     % 1. Applying the threshold: "imbinarize" returns a binary image
-    % 2. Perform stats on the binarized images 
+    % 2. Perform stats on the binarized images
+    % 3. Output tables for visualizations later on 
 
 %=========================================================================%
 % Patrick Horve + Raghu Parthasarathy - Fall 2021
@@ -20,21 +21,21 @@ userpath = inputdlg(prompt,Title,[1 75], defaultans, opts);
 startpath = string(userpath);
 cd (startpath); %path to the folder that holds all the .tif stacks
 
-% Determine the level to use to create the binary image 
+% Determine the level to use to create the binary image
 table = readtable("Timeseries-Intensities.txt");
 table_sub = head(table,10);
 level = mean(table_sub.threshold);
-    
+
 % Make our object directories
 mkdir Matlab-Objects
 mkdir imagepairs
 mkdir Area-Histograms
 
-% Prep to save off the files that we want 
+% Prep to save off the files that we want
 filename="data_output";
 extension=".mat";
-p = ".png"; 
-th = "threshold"; 
+p = ".png";
+th = "threshold";
 his = "histogram-";
 a = "area";
 
@@ -61,7 +62,7 @@ a = "area";
      % fprintf('Original x, y, z sizes: %d (x), %d (y), %d(z).\n', ...
      %     size(stack,2), size(stack,1), size(stack,3));
      % % Manually determine region to keep; enter the numbers here.
-     % xmin = 450; 
+     % xmin = 450;
      % xmax = size(stack,2);
      % ymin = 1;
      % ymax = size(stack,1);
@@ -70,11 +71,11 @@ a = "area";
      % stack = stack(ymin:ymax, xmin:xmax, zmin:zmax);
      % fprintf('New x, y, z sizes: %d (x), %d (y), %d(z).\n', ...
      %     size(stack,2), size(stack,1), size(stack,3));
-     
+
      % Create the binary image
      fprintf('Creating the 3D binary image for timepoint %d\n', t);
      bw_stack = stack > level;  % make our 3D binary image
-     
+
      % Perform morphological closing (Raghu figured out it is actually faster to do this in a loop than to run it all in the stack, weird!)
      % Closing slice by slice, mainly for speed
      closing_radius = 2; % Use a small radius
@@ -86,11 +87,11 @@ a = "area";
      minPixels = 50; % minimum number of pixels (3D) to include after morphological closing
      fprintf("Discarding objects with fewer than %d pixels (3D).\n", minPixels);
      bw_stack = bwareaopen(bw_stack, minPixels); % discard regions with fewer than this number of pixels
-     
+
      % Find connected regions, get statistics note that intensity is threshold-level-subtracted
      disp("Determining statistics on our 3D binary image stack for timepoint "+t);
      stats = regionprops3(bw_stack, stack, 'Volume', 'MaxIntensity', 'MeanIntensity', 'MinIntensity', 'WeightedCentroid');
-     % Save our mast files for this timepoint 
+     % Save our mast files for this timepoint
      cd (startpath)
      cd ./Matlab-Objects
      file=(filename+t+extension);
@@ -104,20 +105,20 @@ a = "area";
      volume = stats.Volume;
      sumVolume = sum(volume);
      fprintf('Total segmented volume: %.4e pixels\n', sumVolume);
-     
+
      % Total above-threshold intensity.
      % Note that we need to sum meanIntensity.*volume, because meanIntensity=alone is just the average pixel intensity in a region; a region of 100x as many pixels has 100x the total intensity!sumRegionIntensity = sum(meanIntensity.*volume);
      fprintf('Total intensity: %.4e\n', sumRegionIntensity);
-     
+
      % NOTE: sumVolume and sumRegionIntensity (in addition to the whole stats array) are the important things to save for each time point.
      his_file=(his+a+t+p);
      fig1 = histogram(stats.Volume);
-     xlim([0 90000])% probably need to change these for every dataset or just leave them extremely large to be able to work for both the control and treatment datasets 
-     ylim([0 200])% probably need to change these for every dataset or just leave them extremely large to be able to work for both the control and treatment datasets 
+     xlim([0 90000])% probably need to change these for every dataset or just leave them extremely large to be able to work for both the control and treatment datasets
+     ylim([0 200])% probably need to change these for every dataset or just leave them extremely large to be able to work for both the control and treatment datasets
      cd Area-Histograms
      saveas(fig1, his_file);
      cd ../
-     % save off the original image and the binary image from a single slice of this timpoint 
+     % save off the original image and the binary image from a single slice of this timpoint
      cd imagepairs
      fusedpair = imfuse(stack(:, :, 70), bw_stack(:, :, 70), 'montage');
      fused = ("imagepair"+t+".png");
@@ -125,3 +126,37 @@ a = "area";
      cd ../
      disp("======================================================")
  end
+
+% Save the data for outputting to a table (useful for visulizations using script 5)
+% go to our folder with all the timepoints
+cd(startpath)
+cd './Fish1'
+% Counts the files in that folder
+all_files = dir;
+all_dir = all_files([all_files(:).isdir]);
+timepoints = numel(all_dir)-2;
+cd ("../Matlab-Objects")
+final_data1 = table;
+% start at 1
+for t = 1:timepoints
+     disp("This is timepoint #"+t); % track the progress of the script
+     time=string(t); % make the timepoint something that we can use in a path
+     tmp_data = load("data_output"+t+".mat");
+     Nregions = size(tmp_data.stats,1);
+     meanintensity = tmp_data.stats.MeanIntensity;
+     volume = tmp_data.stats.Volume;
+     sumRegionIntensity = sum(tmp_data.stats.MeanIntensity.*volume);
+     if t==1
+     final_data1.sumRegionIntensity = sumRegionIntensity;
+     final_data1.objects = Nregions;
+     final_data1.Timepoint = t;
+     else
+         output_data = table;
+         output_data.sumRegionIntensity = sumRegionIntensity;
+         output_data.objects = Nregions;
+         output_data.Timepoint = t;
+         final_data1 = [final_data1 ; output_data];
+     end
+end
+cd ../
+save("series_data", "final_data1")

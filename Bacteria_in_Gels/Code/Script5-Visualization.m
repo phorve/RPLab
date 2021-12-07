@@ -1,6 +1,8 @@
-% for_overall_intensity_plot.m
-% Raghuveer Parthasarathy
-% Dev. 4, 2021
+% This script reads in data created from the four previous scripts in order to visualize the total number of objects visible over time, the total flourescence over time, and the objected-adjusted flourescence over time.
+
+%=========================================================================%
+% Patrick Horve + Raghu Parthasarathy - Fall 2021
+%=========================================================================%
 
 MATdirectory = '/Users/patrick/Dropbox (University of Oregon)/mat';
 cd(MATdirectory)
@@ -18,7 +20,7 @@ sumIntensity_TB = final_data2.sumRegionIntensity;
 nColonies_TB = final_data2.objects;
 
 %% Make plots
-figure('name', 'TotalIntensty', 'position', [50 200 560 420]); 
+figure('name', 'TotalIntensty', 'position', [50 200 560 420]);
 semilogy(t_hrs_Control, sumIntensity_Control, 'o-', 'markersize', 6)
 hold on
 semilogy(t_hrs_TB, sumIntensity_TB, 'o-', 'markersize', 6)
@@ -27,7 +29,7 @@ xlabel('Time, hours')
 ylabel('Total intensity, a.u.')
 legend('Control', 'TB', 'location', 'NW')
 
-figure('name', 'Number of objects', 'position', [100 200 560 420]); 
+figure('name', 'Number of objects', 'position', [100 200 560 420]);
 semilogy(t_hrs_Control, nColonies_Control, 'o', 'markersize', 6)
 hold on
 semilogy(t_hrs_TB, nColonies_TB, 'o', 'markersize', 6)
@@ -36,7 +38,7 @@ xlabel('Time, hours')
 ylabel('Number of colonies')
 legend('Control', 'TB', 'location', 'NW')
 
-figure('name', 'Intensity / Objects', 'position', [150 200 560 420]); 
+figure('name', 'Intensity / Objects', 'position', [150 200 560 420]);
 semilogy(t_hrs_Control, sumIntensity_Control./nColonies_Control, 'o', 'markersize', 6)
 hold on
 semilogy(t_hrs_TB, sumIntensity_TB./nColonies_TB, 'o', 'markersize', 6)
@@ -50,4 +52,3 @@ legend('Control', 'TB', 'location', 'NW')
 % params0 = [5 1e11 1e8 5.75];
 % [r, K, N0, t_lag, sigr, sigK, sigN0, sigt_lag] = fit_logistic_growth(t_hrs_Control, sumIntensity_Control, false,...
 %          [], [], params0, [], [], [], true);
-

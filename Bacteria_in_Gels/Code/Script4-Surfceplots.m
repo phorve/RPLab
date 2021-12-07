@@ -1,7 +1,4 @@
-% This script reads in multiple .tif files output from a
-% custom lightsheet flourescence microscope and creates image image stacks
-% then calculates the sum of all slices in the Z direction to in
-% preparation to create surface plots 
+% This script reads in multiple .mat files used to create surfaceplots over time.
 
 %=========================================================================%
 % Patrick Horve + Raghu Parthasarathy - Fall 2021
@@ -21,13 +18,13 @@ mkdir("IntensityXPosition_threshold")
 mkdir("surfaceplots_mean")
 mkdir("IntensityXPosition_mean")
 
-% Level subtracted analysis 
+% Level subtracted analysis
 % 5. Start looping through the timepoints
-for t = 1:timepoints 
+for t = 1:timepoints
     cd surfaceplot_stacks_levelsubtract
     s = load("surfaceplot_stack-"+t+".mat");
     stack_xy = s.stack_xy;
-    % Make the figure 
+    % Make the figure
     fig1 = figure; surf(stack_xy); shading interp
     caxis([-1000 10000]) % for example, to adjust it
     zlim([-1000 10000])
@@ -36,14 +33,14 @@ for t = 1:timepoints
     ylabel('y, \mum')
     title(sprintf('%.1f hours', t/6))
     colorbar
-    
+
     stack_y = sum(stack_xy,2);
     fig2 = figure; plot(scale_xy*(1:length(stack_y)), stack_y)
     xlabel('y position, microns')
     ylabel('Intensity (summed)')
     cd ../
     cd surfaceplots_threshold
-    % Save the fgiure 
+    % Save the fgiure
     saveas(fig1, ("surfaceplot-"+t+".png"))
     close(fig1)
     cd ../
@@ -52,15 +49,15 @@ for t = 1:timepoints
     close(fig2)
     cd ../
     plot(scale_xy*(1:length(stack_y)), stack_y, '.'); hold on
-end 
+end
 hold off
 
-% Mean subtracted analysis  figures  
-for t = 1:timepoints 
+% Mean subtracted analysis  figures
+for t = 1:timepoints
     cd surfaceplot_stacks_meansubtract
     s = load("surfaceplot_stack-"+t+".mat");
     stack_xy = s.stack_xy_mean;
-    % Make the figure 
+    % Make the figure
     fig1 = figure; surf(scale_xy*(1:size(stack_xy,2)), scale_xy*(1:size(stack_xy,1)), stack_xy); shading interp
     caxis([-1000 10000]) % for example, to adjust it
     zlim([-1000 10000])
@@ -69,14 +66,14 @@ for t = 1:timepoints
     ylabel('y, \mum')
     title(sprintf('%.1f hours', t/6))
     colorbar
-    
+
     stack_y = sum(stack_xy,2);
     fig2 = figure; plot(scale_xy*(1:length(stack_y)), stack_y)
     xlabel('y position, microns')
     ylabel('Intensity (summed)')
     cd ../
     cd surfaceplots_mean
-    % Save the fgiure 
+    % Save the fgiure
     saveas(fig1, ("surfaceplot-"+t+".png"))
     close(fig1)
     cd ../
@@ -85,5 +82,5 @@ for t = 1:timepoints
     close(fig2)
     cd ../
     plot(scale_xy*(1:length(stack_y)), stack_y, '.'); hold on
-end 
+end
 hold off

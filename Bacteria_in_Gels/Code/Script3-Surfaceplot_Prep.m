@@ -1,7 +1,7 @@
 % This script reads in multiple .tif files output from a
-% custom lightsheet flourescence microscope and creates image image stacks
+% custom lightsheet flourescence microscope and creates image stacks
 % then calculates the sum of all slices in the Z direction to in
-% preparation to create surface plots 
+% preparation to create surface plots
 
 %=========================================================================%
 % Patrick Horve + Raghu Parthasarathy - Fall 2021
@@ -22,9 +22,9 @@ cd (startpath); %path to the folder that holds all the .tif stacks
 mkdir("surfaceplot_stacks_levelsubtract")
 mkdir("surfaceplot_stacks_meansubtract")
 
-% Start looping through the timepoints and create our .mat files by subtracting the threshold or the mean 
+% Start looping through the timepoints and create our .mat files by subtracting the threshold or the mean
 output = table;
-for t = 1:timepoints 
+for t = 1:timepoints
     disp("This is timepoint #"+t); % track the progress of the script
     time=string(t); % make the timepoint something that we can use in a path
     fileFolder = strcat(startpath,fish,"/Timepoint",time,"/Pos1/zStack/GFP/Default"); % where are all of our .tif files located?
@@ -47,7 +47,7 @@ for t = 1:timepoints
      % fprintf('Original x, y, z sizes: %d (x), %d (y), %d(z).\n', ...
      %     size(stack,2), size(stack,1), size(stack,3));
      % % Manually determine region to keep; enter the numbers here.
-     % xmin = 450; 
+     % xmin = 450;
      % xmax = size(stack,2);
      % ymin = 1;
      % ymax = size(stack,1);
@@ -56,14 +56,14 @@ for t = 1:timepoints
      % stack = stack(ymin:ymax, xmin:xmax, zmin:zmax);
      % fprintf('New x, y, z sizes: %d (x), %d (y), %d(z).\n', ...
      %     size(stack,2), size(stack,1), size(stack,3));
-     
-     % Determine the level to use to create the binary image 
+
+     % Determine the level to use to create the binary image
      cd (startpath); %path to the folder that holds all the .tif stacks
      table = readtable("Timeseries-Intensities.txt");
      table_sub = head(table,10);
      level = mean(table_sub.threshold);
      mean_level = mean(table_sub.meanintensity);
-     
+
      % Create stack_xy mat objects a
      scale_xy = 0.1625; % microns/px in xy
      stack_xy = sum(stack - level,3); % sum over all z slices, minus background
@@ -75,5 +75,5 @@ for t = 1:timepoints
      cd ../
      cd ./surfaceplot_stacks_meansubtract
      file=("surfaceplot_stack-"+t+".mat");
-     save(file, 'stack_xy_mean');   
+     save(file, 'stack_xy_mean');
 end
